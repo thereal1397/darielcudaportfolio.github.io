@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dariel Cuda — Civil Engineer & Virtual Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #050d1a;
+  --navy-mid: #0a1628;
+  --navy-light: #0f2040;
+  --slate: #1a2d4a;
+  --slate-mid: #243352;
+  --glass: rgba(15, 32, 64, 0.6);
+  --glass-border: rgba(255,255,255,0.08);
+  --glass-border-bright: rgba(255,255,255,0.15);
+  --orange: #FF6B1A;
+  --orange-glow: rgba(255,107,26,0.25);
+  --orange-dim: rgba(255,107,26,0.6);
+  --blue-accent: #4A9EFF;
+  --blue-dim: rgba(74,158,255,0.15);
+  --text-primary: #E8F0FE;
+  --text-secondary: #8BA3C7;
+  --text-muted: #4A6080;
+  --grid-line: rgba(74,158,255,0.06);
+  --white: #ffffff;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--navy);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--navy); }
+::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 2px; }
+
+/* ─── ANIMATED WIREFRAME CANVAS ─── */
+#wireframe-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ─── GRID OVERLAY ─── */
+.grid-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(5,13,26,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.nav-logo {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--orange);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-logo-bracket {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.nav-links {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-links a {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--text-primary);
+  border-color: var(--glass-border);
+  background: var(--glass);
+}
+
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ─── MAIN WRAPPER ─── */
+main { position: relative; z-index: 1; }
+
+/* ─── SECTION COMMON ─── */
+section { padding: 0 48px; }
+
+/* ─── HERO ─── */
+#hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 40% 1fr;
+  gap: 0;
+  padding: 0;
+  padding-top: 64px;
+  position: relative;
+}
+
+.hero-photo-col {
+  position: relative;
+  overflow: hidden;
+  background: var(--navy-mid);
+  border-right: 1px solid var(--glass-border);
+}
+
+.hero-photo-col::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,107,26,0.05) 0%, transparent 50%, rgba(74,158,255,0.05) 100%);
+  z-index: 1;
+}
+
+.hero-photo-col img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  opacity: 0.75;
+  filter: saturate(0.8) contrast(1.1);
+}
+
+.hero-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: linear-gradient(160deg, var(--navy-mid), var(--slate));
+}
+
+.hero-photo-placeholder svg {
+  opacity: 0.15;
+}
+
+.photo-corner {
+  position: absolute;
+  width: 24px; height: 24px;
+  z-index: 2;
+}
+.photo-corner.tl { top: 24px; left: 24px; border-top: 2px solid var(--orange); border-left: 2px solid var(--orange); }
+.photo-corner.tr { top: 24px; right: 24px; border-top: 2px solid var(--orange); border-right: 2px solid var(--orange); }
+.photo-corner.bl { bottom: 24px; left: 24px; border-bottom: 2px solid var(--orange); border-left: 2px solid var(--orange); }
+.photo-corner.br { bottom: 24px; right: 24px; border-bottom: 2px solid var(--orange); border-right: 2px solid var(--orange); }
+
+.photo-scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  opacity: 0.6;
+  z-index: 3;
+  animation: scan 4s linear infinite;
+}
+
+@keyframes scan {
+  0% { top: 24px; opacity: 0; }
+  5% { opacity: 0.6; }
+  95% { opacity: 0.6; }
+  100% { top: calc(100% - 24px); opacity: 0; }
+}
+
+.hero-content-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 72px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  animation: fadeUp 0.8s ease both;
+}
+
+.hero-eyebrow-line {
+  width: 32px; height: 1px;
+  background: var(--orange);
+}
+
+.hero-eyebrow-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+.hero-headline {
+  font-size: clamp(28px, 3.5vw, 52px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  animation: fadeUp 0.8s 0.1s ease both;
+}
+
+.hero-headline .accent {
+  color: var(--orange);
+}
+
+.hero-subheadline {
+  font-size: clamp(14px, 1.5vw, 20px);
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 520px;
+  margin-bottom: 40px;
+  animation: fadeUp 0.8s 0.2s ease both;
+}
+
+.hero-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--orange), transparent);
+  margin-bottom: 36px;
+  animation: fadeUp 0.8s 0.25s ease both;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 48px;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.hero-stat-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.hero-stat-label {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.hero-cta-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--orange);
+  color: var(--white);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 14px 28px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.2);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s;
+}
+
+.btn-primary:hover::before { transform: scaleX(1); }
+.btn-primary:hover { box-shadow: 0 0 40px var(--orange-glow), 0 0 80px var(--orange-glow); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 13px 24px;
+  border: 1px solid var(--glass-border-bright);
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+  background: var(--glass);
+}
+
+/* ─── BENTO SECTION ─── */
+#bento {
+  padding: 120px 48px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 56px;
+}
+
+.section-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--orange);
+  padding: 4px 12px;
+  border: 1px solid var(--orange-dim);
+  background: var(--orange-glow);
+}
+
+.section-title {
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--glass-border);
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto;
+  gap: 16px;
+}
+
+.glass-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  padding: 36px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-border-bright), transparent);
+}
+
+.glass-card:hover {
+  border-color: var(--glass-border-bright);
+  transform: translateY(-2px);
+}
+
+.card-engineer { grid-column: span 5; }
+.card-va { grid-column: span 4; }
+.card-us { grid-column: span 3; }
+.card-contact { grid-column: span 4; }
+.card-tools-mini { grid-column: span 8; }
+
+.card-glow-orange::after {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 120px; height: 120px;
+  background: var(--orange-glow);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.card-glow-blue::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: -40px;
+  width: 120px; height: 120px;
+  background: rgba(74,158,255,0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.card-icon-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.card-icon {
+  width: 40px; height: 40px;
+  border: 1px solid var(--glass-border-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  position: relative;
+}
+
+.card-icon.orange { border-color: var(--orange-dim); background: var(--orange-glow); }
+.card-icon.blue { border-color: rgba(74,158,255,0.3); background: rgba(74,158,255,0.1); }
+.card-icon.green { border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.1); }
+
+.card-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.card-desc {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.card-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border: 1px solid var(--glass-border-bright);
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.03);
+}
+
+.badge.orange { border-color: var(--orange-dim); color: var(--orange); background: var(--orange-glow); }
+.badge.blue { border-color: rgba(74,158,255,0.3); color: var(--blue-accent); background: var(--blue-dim); }
+
+.us-flag-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.card-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.metric-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--orange);
+}
+
+.metric-label {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ─── TIMELINE ─── */
+#timeline {
+  padding: 0 48px 120px;
+}
+
+.timeline-wrapper {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 80px;
+}
+
+.timeline-sidebar {
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.timeline-sidebar-title {
+  font-size: clamp(24px, 3vw, 40px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.timeline-sidebar-desc {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+.timeline-items {
+  position: relative;
+  padding-left: 32px;
+}
+
+.timeline-axis {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--orange), var(--blue-accent) 60%, transparent);
+}
+
+.timeline-node {
+  position: relative;
+  margin-bottom: 48px;
+  animation: fadeUp 0.6s ease both;
+}
+
+.timeline-node-dot {
+  position: absolute;
+  left: -40px;
+  top: 8px;
+  width: 14px; height: 14px;
+  border: 2px solid var(--orange);
+  background: var(--navy);
+  transform: rotate(45deg);
+  transition: background 0.3s;
+}
+
+.timeline-node:hover .timeline-node-dot {
+  background: var(--orange);
+}
+
+.timeline-node-dot.blue {
+  border-color: var(--blue-accent);
+}
+
+.timeline-node:hover .timeline-node-dot.blue {
+  background: var(--blue-accent);
+}
+
+.timeline-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  padding: 28px 32px;
+  transition: border-color 0.3s;
+}
+
+.timeline-card:hover {
+  border-color: var(--glass-border-bright);
+}
+
+.timeline-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--orange);
+  margin-bottom: 8px;
+}
+
+.timeline-date.blue { color: var(--blue-accent); }
+
+.timeline-role {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.timeline-company {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.timeline-duties {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.timeline-duties li {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  padding-left: 16px;
+  position: relative;
+}
+
+.timeline-duties li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--orange);
+  font-size: 10px;
+}
+
+.timeline-duties li.blue::before { color: var(--blue-accent); }
+
+/* ─── TOOLBELT ─── */
+#toolbelt {
+  padding: 0 48px 120px;
+}
+
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  padding: 40px 0;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 24px;
+  animation: carousel 25s linear infinite;
+}
+
+.carousel-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes carousel {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.tool-card {
+  flex-shrink: 0;
+  width: 160px; height: 100px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: border-color 0.3s, transform 0.3s;
+  cursor: default;
+}
+
+.tool-card:hover {
+  border-color: var(--orange-dim);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px var(--orange-glow);
+}
+
+.tool-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.tool-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ─── CONTACT ─── */
+#contact {
+  padding: 80px 48px 120px;
+  position: relative;
+}
+
+.contact-inner {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  padding: 72px 80px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-inner::before {
+  content: '';
+  position: absolute;
+  bottom: -80px; right: -80px;
+  width: 300px; height: 300px;
+  background: var(--orange-glow);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.contact-headline {
+  font-size: clamp(32px, 4vw, 56px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.contact-headline .accent { color: var(--orange); }
+
+.contact-sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 16px;
+  line-height: 1.7;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contact-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 24px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.02);
+  transition: border-color 0.3s;
+  text-decoration: none;
+}
+
+.contact-item:hover {
+  border-color: var(--orange-dim);
+  background: var(--orange-glow);
+}
+
+.contact-item-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.contact-item-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ─── FOOTER ─── */
+footer {
+  padding: 24px 48px;
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-logo {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+.footer-copy {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── COORDINATE LABEL ─── */
+.coord-label {
+  position: fixed;
+  bottom: 24px;
+  left: 48px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* ─── PROGRESS BAR ─── */
+.progress-bar {
+  position: fixed;
+  top: 64px; left: 0;
+  height: 2px;
+  background: var(--orange);
+  z-index: 999;
+  transition: width 0.1s;
+  box-shadow: 0 0 8px var(--orange);
+}
+
+/* ─── SVG ICONS ─── */
+.autocad-icon { color: #E85A00; }
+.sketchup-icon { color: #0072BC; }
+.clio-icon { color: #00A84F; }
+.filevine-icon { color: #8B5CF6; }
+.excel-icon { color: #217346; }
+</style>
+</head>
+<body>
+
+<!-- WIREFRAME CANVAS -->
+<canvas id="wireframe-canvas"></canvas>
+<div class="grid-overlay"></div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progress"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="nav-logo-bracket">[</span>DC<span class="nav-logo-bracket">]</span>
+    DARIEL CUDA
+  </div>
+  <div class="nav-links">
+    <a href="#hero" class="active">Home</a>
+    <a href="#bento">Expertise</a>
+    <a href="#timeline">Experience</a>
+    <a href="#toolbelt">Tools</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    AVAILABLE FOR HIRE
+  </div>
+</nav>
+
+<!-- COORDINATE LABEL -->
+<div class="coord-label" id="coords">LAT: 10.3157° N · LON: 123.8854° E</div>
+
+<!-- MAIN -->
+<main>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+
+  <div class="hero-photo-col">
+    <img src="dariel-photo.jpg" alt="Dariel Cuda"
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+    <div class="hero-photo-placeholder" style="display:none">
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+        <circle cx="60" cy="42" r="28" stroke="#4A9EFF" stroke-width="1.5" stroke-dasharray="4 4"/>
+        <path d="M10 110 Q10 80 60 80 Q110 80 110 110" stroke="#4A9EFF" stroke-width="1.5" fill="none"/>
+        <circle cx="60" cy="60" r="56" stroke="#FF6B1A" stroke-width="0.5" stroke-dasharray="2 8"/>
+      </svg>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.2em;color:var(--text-muted)">DARIEL CUDA</span>
+    </div>
+    <div class="photo-corner tl"></div>
+    <div class="photo-corner tr"></div>
+    <div class="photo-corner bl"></div>
+    <div class="photo-corner br"></div>
+    <div class="photo-scan-line"></div>
+  </div>
+
+  <div class="hero-content-col">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-line"></div>
+      <span class="hero-eyebrow-text">Licensed Civil Engineer · Virtual Assistant · Remote Operations</span>
+    </div>
+
+    <h1 class="hero-headline">
+      THE BRIDGE BETWEEN<br>
+      <span class="accent">FIELD ENGINEERING</span><br>
+      & REMOTE OPS
+    </h1>
+
+    <p class="hero-subheadline">
+      Dariel Cuda — a Licensed Civil Engineer who crossed into US-market remote operations. 
+      Structural precision meets legal system mastery. Hire a system, not just a person.
+    </p>
+
+    <div class="hero-divider"></div>
+
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num">6+</div>
+        <div class="hero-stat-label">Years Experience</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">3</div>
+        <div class="hero-stat-label">US Law Firms</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">CE</div>
+        <div class="hero-stat-label">PH Licensed</div>
+      </div>
+    </div>
+
+    <div class="hero-cta-row">
+      <a href="tel:+639153679244" class="btn-primary">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328z"/>
+        </svg>
+        Call Me Now
+      </a>
+      <a href="mailto:darielcuda@gmail.com" class="btn-secondary">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114V5.383zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.731z"/>
+        </svg>
+        Send Email
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BENTO GRID ─── -->
+<section id="bento">
+  <div class="section-header fade-in">
+    <div class="section-tag">Infrastructure</div>
+    <h2 class="section-title">The Expertise Grid</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="bento-grid">
+
+    <!-- Card 1: The Engineer -->
+    <div class="glass-card card-engineer card-glow-orange fade-in">
+      <div class="card-icon-row">
+        <div class="card-icon orange">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--orange)">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <div class="card-icon orange">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--orange)">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/>
+          </svg>
+        </div>
+        <div class="card-icon orange">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--orange)">
+            <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-label">Module 01</div>
+      <div class="card-title">The Engineer</div>
+      <div class="card-desc">
+        Licensed Civil Engineer with NSCP-compliant structural design expertise. 
+        AutoCAD-native. Built custom Excel estimation tools for government infrastructure.
+        Field-to-office systems architect.
+      </div>
+      <div class="card-badge-row">
+        <span class="badge orange">AutoCAD</span>
+        <span class="badge orange">SketchUp</span>
+        <span class="badge">Cost Estimation</span>
+        <span class="badge">BOQ</span>
+        <span class="badge">NSCP</span>
+        <span class="badge">Permits</span>
+      </div>
+    </div>
+
+    <!-- Card 2: The VA -->
+    <div class="glass-card card-va card-glow-blue fade-in">
+      <div class="card-icon-row">
+        <div class="card-icon blue">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--blue-accent)">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <div class="card-icon blue">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--blue-accent)">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-label">Module 02</div>
+      <div class="card-title">The VA</div>
+      <div class="card-desc">
+        3+ years supporting US-based law firms. CRM expert, legal document specialist.
+        Deployed across Clio, Filevine, Salesforce & Odyssey E-filing systems.
+      </div>
+      <div class="card-badge-row">
+        <span class="badge blue">Clio</span>
+        <span class="badge blue">Filevine</span>
+        <span class="badge blue">Salesforce</span>
+        <span class="badge">Odyssey</span>
+        <span class="badge">Legal Docs</span>
+      </div>
+    </div>
+
+    <!-- Card 3: US Market Ready -->
+    <div class="glass-card card-us fade-in" style="background: linear-gradient(135deg, rgba(15,32,64,0.8), rgba(255,107,26,0.05));">
+      <div class="card-label">Module 03</div>
+      <div class="us-flag-text">US<br>MKT</div>
+      <div class="card-desc" style="font-size:12px;">
+        Proven track record with American law firms. US legal standards, timezones, and client communication protocols.
+      </div>
+      <div class="card-metric">
+        <div class="metric-num">3</div>
+        <div class="metric-label">US Law Firms Served</div>
+      </div>
+      <div class="card-metric" style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--glass-border);">
+        <div class="metric-num" style="font-size:22px;">EST/PST</div>
+        <div class="metric-label">Timezone Aligned</div>
+      </div>
+    </div>
+
+    <!-- Card 4: Mini tools -->
+    <div class="glass-card card-tools-mini fade-in">
+      <div class="card-label">Systems Online</div>
+      <div class="card-title" style="font-size:18px; margin-bottom:20px;">Full-Stack Toolbelt</div>
+      <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border:1px solid var(--glass-border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--orange-dim)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+          <span style="font-size:20px;">📐</span>
+          <span style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;color:var(--text-muted);text-align:center">AUTO CAD</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border:1px solid var(--glass-border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--orange-dim)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+          <span style="font-size:20px;">🏗️</span>
+          <span style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;color:var(--text-muted);text-align:center">SKETCH UP</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border:1px solid var(--glass-border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--orange-dim)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+          <span style="font-size:20px;">⚖️</span>
+          <span style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;color:var(--text-muted);text-align:center">CLIO</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border:1px solid var(--glass-border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--orange-dim)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+          <span style="font-size:20px;">📁</span>
+          <span style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;color:var(--text-muted);text-align:center">FILE VINE</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border:1px solid var(--glass-border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--orange-dim)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+          <span style="font-size:20px;">📊</span>
+          <span style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;color:var(--text-muted);text-align:center">EXCEL</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border:1px solid var(--glass-border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--orange-dim)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+          <span style="font-size:20px;">☁️</span>
+          <span style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;color:var(--text-muted);text-align:center">SALESFORCE</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border:1px solid var(--glass-border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--orange-dim)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+          <span style="font-size:20px;">🗂️</span>
+          <span style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;color:var(--text-muted);text-align:center">ODYSSEY</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;border:1px solid var(--glass-border);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--orange-dim)'" onmouseout="this.style.borderColor='var(--glass-border)'">
+          <span style="font-size:20px;">🔧</span>
+          <span style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;color:var(--text-muted);text-align:center">G-SUITE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5: Contact pill -->
+    <div class="glass-card card-contact fade-in" style="background: linear-gradient(135deg, rgba(255,107,26,0.08), rgba(15,32,64,0.8)); border-color: var(--orange-dim);">
+      <div class="card-label" style="margin-bottom:16px;">Direct Line</div>
+      <div class="card-title" style="margin-bottom: 8px;">Ready to Deploy</div>
+      <div class="card-desc" style="margin-bottom:28px;">Based in Cebu, Philippines. Fully remote-capable. Available for US-timezone roles immediately.</div>
+      <a href="tel:+639153679244" class="btn-primary" style="display:inline-flex; width:fit-content;">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328z"/>
+        </svg>
+        +63 915 367 9244
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── TIMELINE ─── -->
+<section id="timeline">
+  <div class="section-header fade-in">
+    <div class="section-tag">Blueprint</div>
+    <h2 class="section-title">Experience Timeline</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="timeline-wrapper">
+    <div class="timeline-sidebar fade-in">
+      <div class="timeline-sidebar-title">From <span style="color:var(--orange)">Field</span><br>to <span style="color:var(--blue-accent)">Command</span></div>
+      <div class="timeline-sidebar-desc">
+        A career arc spanning structural engineering in the Philippines to high-stakes VIP client operations 
+        for US law firms — every role a load-bearing column in a larger structure.
+      </div>
+      <div style="margin-top: 28px; padding: 20px; border: 1px solid var(--glass-border); background: var(--glass);">
+        <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--text-muted);margin-bottom:8px;">EDUCATION</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">BS Civil Engineering</div>
+        <div style="font-size:11px;color:var(--text-muted);">Capitol University</div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--glass-border);">
+          <div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:4px;">Technical Drafting NC II</div>
+          <div style="font-size:11px;color:var(--text-muted);">Sisters of Mary School</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="timeline-items">
+      <div class="timeline-axis"></div>
+
+      <div class="timeline-node fade-in" style="animation-delay:0.1s">
+        <div class="timeline-node-dot"></div>
+        <div class="timeline-card">
+          <div class="timeline-date">NOV 2024 — FEB 2026</div>
+          <div class="timeline-role">VIP Client Care Specialist</div>
+          <div class="timeline-company">Law Offices of Jacob Emrani · Remote, US</div>
+          <ul class="timeline-duties">
+            <li>Managed VIP client accounts with seamless communication and service delivery</li>
+            <li>Maintained detailed records of client interactions and case updates</li>
+            <li>Handled scheduling, transactions, and escalation resolution</li>
+            <li>Improved workflow tracking for client case continuity</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-node fade-in" style="animation-delay:0.2s">
+        <div class="timeline-node-dot"></div>
+        <div class="timeline-card">
+          <div class="timeline-date">APR 2024 — NOV 2024</div>
+          <div class="timeline-role">Legal Assistant</div>
+          <div class="timeline-company">Labovick Law Group · Remote, US</div>
+          <ul class="timeline-duties">
+            <li>Drafted legal documents including dismissals and court filings</li>
+            <li>Managed case updates and filings through Odyssey E-filing system</li>
+            <li>Maintained organized digital case files and documentation</li>
+            <li>Coordinated with attorneys, case managers, and clients</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-node fade-in" style="animation-delay:0.3s">
+        <div class="timeline-node-dot"></div>
+        <div class="timeline-card">
+          <div class="timeline-date">FEB 2023 — APR 2024</div>
+          <div class="timeline-role">Medical Records & Billing Assistant</div>
+          <div class="timeline-company">Saeedian Law · Remote, US</div>
+          <ul class="timeline-duties">
+            <li>Prepared medical summaries and managed patient data</li>
+            <li>Drafted legal correspondence and insurance-related documents</li>
+            <li>Ensured accuracy in billing and records management</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-node fade-in" style="animation-delay:0.4s">
+        <div class="timeline-node-dot blue"></div>
+        <div class="timeline-card" style="border-color: rgba(74,158,255,0.15);">
+          <div class="timeline-date blue">JUN 2021 — FEB 2023</div>
+          <div class="timeline-role">Office Civil Engineer</div>
+          <div class="timeline-company">Municipal Planning & Development Office · Cebu, PH</div>
+          <ul class="timeline-duties">
+            <li class="blue">Prepared cost estimates, BOQs, and infrastructure project plans</li>
+            <li class="blue">Developed Excel-based structural estimation tool (NSCP compliant)</li>
+            <li class="blue">Coordinated infrastructure projects and regulatory documentation</li>
+            <li class="blue">Supported permitting and government compliance processes</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="timeline-node fade-in" style="animation-delay:0.5s">
+        <div class="timeline-node-dot blue"></div>
+        <div class="timeline-card" style="border-color: rgba(74,158,255,0.15);">
+          <div class="timeline-date blue">FEB 2019 — JUL 2020</div>
+          <div class="timeline-role">Site Acquisition Engineer</div>
+          <div class="timeline-company">Domaintricks Corporation · Cebu, PH</div>
+          <ul class="timeline-duties">
+            <li class="blue">Coordinated permits, site documentation, and regulatory approvals</li>
+            <li class="blue">Conducted site analysis and multi-stakeholder project coordination</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── TOOLBELT ─── -->
+<section id="toolbelt">
+  <div class="section-header fade-in">
+    <div class="section-tag">Toolbelt</div>
+    <h2 class="section-title">Systems & Software</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="carousel-container fade-in">
+    <div class="carousel-track" id="carousel-track">
+      <div class="tool-card"><span class="tool-icon">📐</span><span class="tool-name">AutoCAD</span></div>
+      <div class="tool-card"><span class="tool-icon">🏗️</span><span class="tool-name">SketchUp</span></div>
+      <div class="tool-card"><span class="tool-icon">⚖️</span><span class="tool-name">Clio</span></div>
+      <div class="tool-card"><span class="tool-icon">📁</span><span class="tool-name">Filevine</span></div>
+      <div class="tool-card"><span class="tool-icon">📊</span><span class="tool-name">Excel</span></div>
+      <div class="tool-card"><span class="tool-icon">☁️</span><span class="tool-name">Salesforce</span></div>
+      <div class="tool-card"><span class="tool-icon">🗂️</span><span class="tool-name">Odyssey</span></div>
+      <div class="tool-card"><span class="tool-icon">📧</span><span class="tool-name">G-Suite</span></div>
+      <div class="tool-card"><span class="tool-icon">💼</span><span class="tool-name">MS Office</span></div>
+      <!-- duplicate for seamless loop -->
+      <div class="tool-card"><span class="tool-icon">📐</span><span class="tool-name">AutoCAD</span></div>
+      <div class="tool-card"><span class="tool-icon">🏗️</span><span class="tool-name">SketchUp</span></div>
+      <div class="tool-card"><span class="tool-icon">⚖️</span><span class="tool-name">Clio</span></div>
+      <div class="tool-card"><span class="tool-icon">📁</span><span class="tool-name">Filevine</span></div>
+      <div class="tool-card"><span class="tool-icon">📊</span><span class="tool-name">Excel</span></div>
+      <div class="tool-card"><span class="tool-icon">☁️</span><span class="tool-name">Salesforce</span></div>
+      <div class="tool-card"><span class="tool-icon">🗂️</span><span class="tool-name">Odyssey</span></div>
+      <div class="tool-card"><span class="tool-icon">📧</span><span class="tool-name">G-Suite</span></div>
+      <div class="tool-card"><span class="tool-icon">💼</span><span class="tool-name">MS Office</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section id="contact">
+  <div class="contact-inner fade-in">
+    <div>
+      <div class="section-tag" style="display:inline-block; margin-bottom:20px;">Initiate Contact</div>
+      <div class="contact-headline">
+        Let's<br>Build<br><span class="accent">Something.</span>
+      </div>
+      <div class="contact-sub">
+        Licensed Civil Engineer. Legal VA. Remote-ready. Available for US-based construction firms, 
+        law offices, and technical remote roles.
+      </div>
+    </div>
+    <div class="contact-links">
+      <a href="mailto:darielcuda@gmail.com" class="contact-item">
+        <span class="contact-item-label">Primary Email</span>
+        <span class="contact-item-value">darielcuda@gmail.com</span>
+      </a>
+      <a href="tel:+639153679244" class="contact-item">
+        <span class="contact-item-label">Mobile / WhatsApp</span>
+        <span class="contact-item-value">+63 915 367 9244</span>
+      </a>
+      <div class="contact-item" style="cursor:default;">
+        <span class="contact-item-label">Location</span>
+        <span class="contact-item-value">Cebu, Philippines — Open to Remote</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">[DC] DARIEL CUDA · PORTFOLIO 2026</span>
+  <span class="footer-copy">CIVIL ENGINEER · VIRTUAL ASSISTANT · CEBU, PH</span>
+</footer>
+
+<script>
+/* ─── WIREFRAME ANIMATION ─── */
+const canvas = document.getElementById('wireframe-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, scrollY = 0;
+let lines = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function buildLines() {
+  lines = [];
+  const cols = Math.ceil(W / 80) + 2;
+  const rows = Math.ceil(H / 80) + 2;
+
+  // Perspective grid lines
+  for (let i = -cols; i < cols * 2; i++) {
+    lines.push({
+      type: 'v',
+      x: i * 80,
+      alpha: 0.3 + Math.random() * 0.2
+    });
+  }
+  for (let j = 0; j < rows * 2; j++) {
+    lines.push({
+      type: 'h',
+      y: j * 80,
+      alpha: 0.2 + Math.random() * 0.15
+    });
+  }
+
+  // Structural columns (vertical accent lines)
+  for (let k = 0; k < 5; k++) {
+    lines.push({
+      type: 'column',
+      x: (W / 4) * k + 100,
+      alpha: 0.4
+    });
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  const offset = scrollY * 0.15;
+
+  ctx.strokeStyle = '#4A9EFF';
+  ctx.lineWidth = 0.5;
+
+  lines.forEach(l => {
+    ctx.globalAlpha = l.alpha * 0.6;
+    ctx.beginPath();
+    if (l.type === 'v') {
+      ctx.moveTo(l.x, 0);
+      ctx.lineTo(l.x, H);
+    } else if (l.type === 'h') {
+      const y = (l.y + offset) % (H + 80) - 80;
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+    } else if (l.type === 'column') {
+      ctx.strokeStyle = '#FF6B1A';
+      ctx.globalAlpha = l.alpha * 0.15;
+      ctx.moveTo(l.x, 0);
+      ctx.lineTo(l.x, H);
+      ctx.strokeStyle = '#4A9EFF';
+    }
+    ctx.stroke();
+  });
+
+  ctx.globalAlpha = 1;
+}
+
+window.addEventListener('scroll', () => {
+  scrollY = window.scrollY;
+  draw();
+});
+
+window.addEventListener('resize', () => {
+  resize();
+  buildLines();
+  draw();
+});
+
+resize();
+buildLines();
+draw();
+
+/* ─── PROGRESS BAR ─── */
+const progress = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  progress.style.width = pct + '%';
+});
+
+/* ─── INTERSECTION OBSERVER ─── */
+const fadeEls = document.querySelectorAll('.fade-in');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+fadeEls.forEach(el => io.observe(el));
+
+/* ─── ACTIVE NAV ─── */
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+const navObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => navObs.observe(s));
+
+/* ─── MOUSE PARALLAX ON HERO ─── */
+document.addEventListener('mousemove', (e) => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 20;
+  const y = (e.clientY / window.innerHeight - 0.5) * 10;
+  const canvas = document.getElementById('wireframe-canvas');
+  canvas.style.transform = `translate(${x * 0.5}px, ${y * 0.5}px)`;
+});
+</script>
+</body>
+</html>
